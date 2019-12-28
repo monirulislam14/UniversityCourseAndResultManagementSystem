@@ -1,0 +1,170 @@
+﻿@model UniversityCourseAndResultManagementSystem.Models.SaveStudentResult
+
+@{
+    ViewBag.Title = "View Result";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <h4>EnrollInACourse</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.LabelFor(model => model.StudentId, "Reg No", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.StudentId, ViewBag.Students as SelectList, "--Select--", new { @class = "form-control" })
+
+                @Html.ValidationMessageFor(model => model.StudentId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.StudentId, "Name", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <input type="text" readonly="readonly" name="StudentName" id="StudentName" class="form-control" />
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.StudentId, "Email", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <input type="text" readonly="readonly" name="StudentEmail" id="StudentEmail" class="form-control" />
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.StudentId, "Department", htmlAttributes: new { @class = "control-label col-md-2" })
+
+            <div class="col-md-10">
+                <input type="text" readonly="readonly" name="DepartmentId" id="DepartmentId" class="form-control" />
+            </div>
+        </div>
+
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <button id="cmd">Make PDF</button>
+            </div>
+        </div>
+        <table id="myTable" class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Course Code</th>
+                    <th>Name</th>
+                    <th>Grade</th>
+
+                </tr>
+            </thead>
+            <tbody id="studentInfo"></tbody>
+
+        </table>
+
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+<script src="~/Scripts/jquery-3.4.1.js"></script>
+<script src="~/Scripts/jquery.validate.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
+<script src="~/Scripts/DataTables/jquery.dataTables.js"></script>
+
+
+@section scripts
+{
+    <script src="https://code.jquery.com/jquery-1.12.3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/0.9.0rc1/jspdf.min.js"></script>
+    <script>
+
+
+    $(document).ready(function () {
+        $("#StudentId").change(function () {
+            var studentId = $("#StudentId").val();
+
+            $("#studentInfo").empty();
+
+            $("#StudentName").val('');
+            $("#StudentEmail").val('');
+            $("#DepartmentId").val('');
+
+
+
+            var parameter = { studentId: studentId }
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("GetStudentNameEmailDeptByStId", "SaveStudentResult")',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(parameter),
+                success: function (data) {
+                    $("#StudentName").val(data.StudentName);
+                    $("#StudentEmail").val(data.StudentEmail);
+                    $("#DepartmentId").val(data.Department.DepartmentCode);
+
+                }
+            });
+
+              $.ajax({
+                type: "POST",
+                url: '@Url.Action("GetStudentNameEmailDeptByRegNo", "SaveStudentResult")',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(parameter),
+                success: function (data) {
+
+                    $.each(data, function (key, value) {
+
+                        $("#studentInfo").append('<tr>' +
+                            '<td>' +
+                            value.Course.CourseCode +
+                            '</td>' +
+                            '<td>' +
+                            value.Course.CoursName +
+                            '</td>' +
+                            '<td>' +
+                            value.Grade.GradeLetter +
+                            '</td></tr>');
+                    });
+                }
+            });
+
+        });
+        $('#myTable').DataTable({
+            "paging": false,
+            "ordering": false,
+            //"dom": false,
+            initComplete: function () {
+                $('.buttons-pdf').html('<input type="submit" value="Export PDF" style="margin-right: 10px" class="btn btn-success Container" data-toggle="tooltip" />');
+                $('.buttons-print').html('<input type="submit" value="Print" class="btn btn-primary Container" data-toggle="tooltip"/><hr/>');
+            },
+            dom: 'B<"clear">lfrtip',
+            buttons: [
+                'pdf', 'print'
+            ]
+        });
+
+
+        });
+
+
+        var doc = new jsPDF();
+        var specialElementHandlers = {
+            '#myTable': function (element, renderer) {
+                return true;
+            }
+        };
+
+        $('#cmd').click(function () {
+            doc.fromHTML($('#studentInfo').html(), 15, 15, {
+                'width': 170,
+                'elementHandlers': specialElementHandlers
+            });
+            doc.save('sample-file.pdf');
+        });
+
+    </script>
+}

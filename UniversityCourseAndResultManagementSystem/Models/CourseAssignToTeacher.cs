@@ -19,7 +19,7 @@ namespace UniversityCourseAndResultManagementSystem.Models
 
         public int TeacherId { get; set; }
         [Required(ErrorMessage = "Please Give the Course Code")]
-
+        
         public int CourseId { get; set; }
 
         public virtual Department Department { get; set; }

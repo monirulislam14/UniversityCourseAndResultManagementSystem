@@ -5,7 +5,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using UniversityCourseAndResultManagementSystem.Models;
-
+using FlashMessage;
 namespace UniversityCourseAndResultManagementSystem.Controllers
 {
     public class CourseController : Controller
@@ -25,9 +25,34 @@ namespace UniversityCourseAndResultManagementSystem.Controllers
         [HttpPost]
         public ActionResult Create(Course course)
         {
-            db.Entry(course).State = EntityState.Added;
-            db.SaveChanges();
-            return RedirectToAction("Index", "Course");
+            if (ModelState.IsValid)
+            {
+                db.Entry(course).State = EntityState.Added;
+                db.SaveChanges();
+                return RedirectToAction("Create", "Course").WithNotice("Successfully Course Saved");
+            }
+            ModelState.Clear();
+            return RedirectToAction("Create", "Course").WithError("Not Saved");
+        }
+        public JsonResult IsCourseCodeExist(string courseCode)
+        {
+            var course = db.Courses.ToList();
+            if (!course.Any(x => x.CourseCode.ToLower() == courseCode.ToLower()))
+            {
+                return Json(true, JsonRequestBehavior.AllowGet);
+            }
+            return Json(false, JsonRequestBehavior.AllowGet);
+
+        }
+        public JsonResult IsCourseNameExist(string coursName)
+        {
+            var course = db.Courses.ToList();
+            if (!course.Any(x => x.CoursName.ToLower() == coursName.ToLower()))
+            {
+                return Json(true, JsonRequestBehavior.AllowGet);
+            }
+            return Json(false, JsonRequestBehavior.AllowGet);
+
         }
         public ActionResult Edit(int id)
         {
@@ -59,6 +84,15 @@ namespace UniversityCourseAndResultManagementSystem.Controllers
             db.SaveChanges();
 
             return RedirectToAction("Index", "Course");
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db.Dispose();
+            }
+            base.Dispose(disposing);
         }
     }
 }

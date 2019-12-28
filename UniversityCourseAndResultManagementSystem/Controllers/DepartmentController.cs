@@ -5,6 +5,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using UniversityCourseAndResultManagementSystem.Models;
+using FlashMessage;
 
 namespace UniversityCourseAndResultManagementSystem.Controllers
 {
@@ -58,17 +59,52 @@ namespace UniversityCourseAndResultManagementSystem.Controllers
             return RedirectToAction("Index", "Department");
         }
 
+
+        public JsonResult IsCodeExist(string DepartmentCode)
+        {
+            var dept = db.Departments.ToList();
+            if (!dept.Any(x => x.DepartmentCode.ToLower() == DepartmentCode.ToLower()))
+            {
+                return Json(true, JsonRequestBehavior.AllowGet);
+            }
+            return Json(false, JsonRequestBehavior.AllowGet);
+
+        }
+
+        public JsonResult IsNameExist(string DepartmentName)
+        {
+            var dept = db.Departments.ToList();
+            if (!dept.Any(x => x.DepartmentName.ToLower() == DepartmentName.ToLower()))
+            {
+                return Json(true, JsonRequestBehavior.AllowGet);
+            }
+            return Json(false, JsonRequestBehavior.AllowGet);
+
+        }
+
         public ActionResult Create()
         {
+          
             return View();
+            
         }
         [HttpPost]
         public ActionResult Create(Department dept)
         {
             db.Entry(dept).State = EntityState.Added;
             db.SaveChanges();
-            return RedirectToAction("Index", "Department");
 
+            return RedirectToAction("Create","Department").WithNotice("Succesfully Department Saved");
+
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db.Dispose();
+            }
+            base.Dispose(disposing);
         }
     }
 }

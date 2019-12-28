@@ -5,7 +5,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Index</h2>
+<h2>View All Department</h2>
 
 <p>
     @Html.ActionLink("Create New", "Create")
@@ -13,10 +13,10 @@
 <table class="table">
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.DepartmentCode)
+            @Html.DisplayName("Code")
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.DepartmentName)
+            @Html.DisplayName("Name")
         </th>
         <th>Action</th>
     </tr>

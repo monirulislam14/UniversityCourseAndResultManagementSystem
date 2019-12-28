@@ -5,7 +5,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using UniversityCourseAndResultManagementSystem.Models;
-
+using FlashMessage;
 namespace UniversityCourseAndResultManagementSystem.Controllers
 {
     public class TeacherController : Controller
@@ -18,6 +18,7 @@ namespace UniversityCourseAndResultManagementSystem.Controllers
         }
         public ActionResult Create()
         {
+          
             ViewBag.Departments = new SelectList(db.Departments.ToList(), "DepartmentId", "DepartmentName");
             ViewBag.Designations = new SelectList(db.Designations.ToList(), "DesignationId", "DesignationName");
             return View();
@@ -26,14 +27,18 @@ namespace UniversityCourseAndResultManagementSystem.Controllers
         [HttpPost]
         public ActionResult Create(Teacher teacher)
         {
+            var course = db.Courses.FirstOrDefault(x => x.DepartmentId == teacher.DepartmentId);
+           
             if (ModelState.IsValid)
             {
+               
+                    teacher.TeacherRemainingCredit = teacher.CreditToBeTaken;
                 db.Entry(teacher).State = EntityState.Added;
                 db.SaveChanges();
-                return RedirectToAction("Index", "Teacher");
+                return RedirectToAction("Create", "Teacher").WithNotice("Successfully Teacher Saved");
             }
             ModelState.Clear();
-            return View();
+            return View().WithFlash("Not Saved");
         }
 
         public JsonResult IsEmailExist(string TeacherEmail)
@@ -45,6 +50,14 @@ namespace UniversityCourseAndResultManagementSystem.Controllers
             }
             return Json(false, JsonRequestBehavior.AllowGet);
 
+        }
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db.Dispose();
+            }
+            base.Dispose(disposing);
         }
     }
 }

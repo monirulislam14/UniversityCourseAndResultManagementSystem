@@ -6,6 +6,7 @@ using System.Web;
 using System.Web.Mvc;
 using UniversityCourseAndResultManagementSystem.Models;
 using FlashMessage;
+using Rotativa;
 
 namespace UniversityCourseAndResultManagementSystem.Controllers
 {
@@ -18,6 +19,11 @@ namespace UniversityCourseAndResultManagementSystem.Controllers
             return View(db.Departments.ToList());
         }
 
+        public ActionResult PrintAll()
+        {
+            var q = new ActionAsPdf("Index");
+            return q;
+        }
         public ActionResult Details(int id)
         {
             return View(db.Departments.Where(x => x.DepartmentId == id).FirstOrDefault());

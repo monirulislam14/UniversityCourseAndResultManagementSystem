@@ -139,3 +139,4 @@ D:\ASP.Net Project\_Main Major Project\UniversityCourseAndResultManagementSystem
 D:\ASP.Net Project\_Main Major Project\UniversityCourseAndResultManagementSystem\UniversityCourseAndResultManagementSystem\bin\fr\Wisej.Web.resources.dll
 D:\ASP.Net Project\_Main Major Project\UniversityCourseAndResultManagementSystem\UniversityCourseAndResultManagementSystem\bin\it\Wisej.Web.resources.dll
 D:\ASP.Net Project\_Main Major Project\UniversityCourseAndResultManagementSystem\UniversityCourseAndResultManagementSystem\bin\pt\Wisej.Web.resources.dll
+D:\ASP.Net Project\_Main Major Project\UniversityCourseAndResultManagementSystem\UniversityCourseAndResultManagementSystem\bin\Rotativa.dll

@@ -6,6 +6,8 @@ using System.Web;
 using System.Web.Mvc;
 using UniversityCourseAndResultManagementSystem.Models;
 using FlashMessage;
+using Rotativa;
+
 namespace UniversityCourseAndResultManagementSystem.Controllers
 {
     public class SaveStudentResultController : Controller
@@ -42,6 +44,12 @@ namespace UniversityCourseAndResultManagementSystem.Controllers
             db.SaveChanges();
 
             return RedirectToAction("CreateEnrollCourse", "EnrollCourse").WithNotice("Student Result Successfully");
+        }
+
+        public ActionResult PrintAll()
+        {
+            var q = new ActionAsPdf("ViewResult");
+            return q;
         }
         public JsonResult GetStudentNameEmailDeptByRegNo(int studentId)
         {
